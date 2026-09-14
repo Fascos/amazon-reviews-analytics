@@ -27,26 +27,29 @@ The main objectives were to:
 
 ---
 
-## Project structure
+## Project Structure
 
+```text
 Amazon-Reviews-Analytics/
 │
-├── README.md                 ← overall README
+├── README.md                 # Overall project documentation
 │
 ├── Task-1-NLP/
-│   ├── notebook.ipynb
-│   ├── README.md
+│   ├── notebook.ipynb        # NLP analysis and modeling
+│   ├── README.md             # Task-specific documentation
 │   └── amazon_reviews_lab.csv
 │
 ├── Task-2-Time-Series/
-│   ├── notebook.ipynb
-│   ├── README.md
+│   ├── notebook.ipynb        # Forecasting and trends
+│   ├── README.md             # Task-specific documentation
 │   └── amazon_reviews_lab.csv
 │
 └── Task-3-Neural-Network/
-    ├── notebook.ipynb
-    ├── README.md
+    ├── notebook.ipynb        # Deep learning models
+    ├── README.md             # Task-specific documentation
     └── amazon_reviews_lab.csv
+```
+
 
 # Part 1: Natural Language Processing
 
