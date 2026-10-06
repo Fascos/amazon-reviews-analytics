@@ -1,4 +1,4 @@
-# Amazon Customer Analytics — NLP, Time Series & Neural Networks
+# Amazon Customer Reviews Analytics: NLP, Time Series Forecasting & Neural Networks
 
 ## Project Overview
 
@@ -35,18 +35,18 @@ Amazon-Reviews-Analytics/
 ├── README.md                 # Overall project documentation
 │
 ├── Task-1-NLP/
-│   ├── notebook.ipynb        # NLP analysis and modeling
-│   ├── README.md             # Task-specific documentation
+│   ├── NLP-Customer-Reviews.ipynb        
+│   ├── README.md            
 │   └── amazon_reviews_lab.csv
 │
 ├── Task-2-Time-Series/
-│   ├── notebook.ipynb        # Forecasting and trends
-│   ├── README.md             # Task-specific documentation
+│   ├── Time-Series-Forecasting.ipynb        
+│   ├── README.md             
 │   └── amazon_reviews_lab.csv
 │
 └── Task-3-Neural-Network/
-    ├── notebook.ipynb        # Deep learning models
-    ├── README.md             # Task-specific documentation
+    ├── customer_rating_neural_network        
+    ├── README.md            
     └── amazon_reviews_lab.csv
 ```
 
@@ -131,8 +131,6 @@ The NLP analysis showed that:
 * Negative reviews focused more on problems and difficulties.
 * Positive reviews highlighted performance and useful features.
 * Neutral reviews were generally more descriptive.
-
-The processed text provided the foundation for the neural network classification task.
 
 ---
 
@@ -234,82 +232,149 @@ The analysis showed that:
 
 ---
 
+Perfect. Replace everything from **`# Part 3: Neural Network Classification`** to the end of your README with this:
+
 # Part 3: Neural Network Classification
 
 ## Overview
 
-The third part used the processed review text to build a **Multi-Layer Perceptron (MLP)** for customer rating classification.
+The third part used Amazon review text to build a **Multi-Layer Perceptron (MLP)** for predicting customer ratings from **1 to 5 stars**.
 
-The review text was converted into numerical features using **TF-IDF**, using the 1,000 most important features.
+The review text was converted into numerical features using **TF-IDF**, with a maximum of **5,000 features**. The data was split into training and testing sets using stratified sampling to maintain the rating distribution.
+
+## Data Preparation
+
+The dataset was divided into:
+
+* **797 training reviews**
+* **200 testing reviews**
+
+The five rating classes were one-hot encoded for the Keras models.
+
+The dataset was highly imbalanced, with **5-star reviews representing 58.17%** of all reviews. This imbalance became an important consideration during model evaluation.
 
 ## MLP Architecture
 
-The final neural network consisted of:
+The initial Keras neural network consisted of:
 
-* **Input:** 1,000 TF-IDF features
-* **Hidden layer 1:** 128 neurons
-* **Hidden layer 2:** 64 neurons
+* **Input:** 5,000 TF-IDF features
+* **Hidden layer 1:** 64 neurons
+* **Hidden layer 2:** 32 neurons
 * **Output:** 5 neurons representing ratings 1–5
-* **Activation:** Tanh
+* **Activation:** ReLU
+* **Dropout:** 0.3
 * **Optimizer:** Adam
-* **Dropout:** 0.1
+* **Learning rate:** 0.001
+* **Epochs:** 20
 
-Different activation functions and network configurations were tested. Tanh achieved the best performance during the initial activation comparison with **61.5% validation accuracy**.
+The initial ReLU model achieved **54.5% test accuracy**. Training accuracy reached 100%, while validation accuracy remained lower, showing clear signs of overfitting.
 
-## Hyperparameter Tuning
+## Activation Function Experiments
 
-Different learning rates, batch sizes, epochs, dropout settings, optimizers, and network architectures were tested.
+Three activation functions were compared:
 
-The final best configuration was:
+* ReLU
+* Tanh
+* Sigmoid
 
-* **128 → 64 neurons**
-* **Tanh activation**
-* **Adam optimizer**
-* **Learning rate: 0.001**
-* **Batch size: 32**
-* **Epochs: 50**
-* **Dropout: 0.1**
+ReLU and Tanh achieved **54.5% test accuracy**, while Sigmoid achieved **58.0%**.
 
-This configuration achieved a **best validation accuracy of 61.5%**.
+However, ReLU achieved the strongest validation performance during the activation comparison, reaching **63.75% validation accuracy**. Therefore, **ReLU** was selected for further experiments.
 
-## PyTorch Implementation
+## Keras and PyTorch Comparison
 
-A basic version of the MLP was also implemented using PyTorch.
+The same basic MLP structure was also implemented using **PyTorch**.
 
-The PyTorch model achieved **58.0% validation accuracy**, which was lower than the Keras model.
+The comparison showed that:
 
-This demonstrated that both frameworks could implement the same basic neural network approach, while Keras provided a simpler training workflow for this task.
+* Keras uses a simpler Sequential model structure.
+* Keras provides a built-in training process using `model.fit()`.
+* PyTorch requires a custom model class and manual training loop.
+* Keras achieved the higher validation accuracy in the framework comparison.
 
-Here is the corrected **Final Evaluation** section based directly on your updated output:
+The Keras implementation was therefore selected for the final model.
+
+## Model Optimization
+
+Several experiments were performed to improve model performance and reduce overfitting.
+
+The experiments included:
+
+* Class weighting
+* Learning rate
+* Batch size
+* Number of hidden layers
+* Number of neurons
+* Dropout rate
+* Optimizer
+* Number of epochs
+
+Class weighting improved test accuracy from **54.5% to 57.5%**, showing that addressing class imbalance could provide a modest improvement.
+
+The hyperparameter experiments selected:
+
+* **Learning rate:** 0.01
+* **Batch size:** 16
+* **Architecture:** 64 neurons in one hidden layer
+* **Dropout:** 0.5
+* **Optimizer:** Adam
+* **Epochs:** 20
+
+The final model was therefore simplified from the original two-hidden-layer architecture.
+
+## Final Model
+
+The final tuned Keras model used:
+
+**5000 → 64 → 5**
+
+with:
+
+* **TF-IDF features:** 5,000
+* **Hidden layer:** 64 neurons
+* **Hidden activation:** ReLU
+* **Output activation:** Softmax
+* **Optimizer:** Adam
+* **Learning rate:** 0.01
+* **Dropout:** 0.5
+* **Batch size:** 16
+* **Epochs:** 20
 
 ## Final Evaluation
 
 The final tuned Keras model achieved:
 
-* **Test Accuracy: 52.5%**
+* **Test Accuracy: 55.5%**
+* **Test Loss: 2.1075**
+* **Best Validation Accuracy: 61.25%**
+* **Macro F1-score: 0.31**
 * **Weighted F1-score: 0.51**
-* **Macro F1-score: 0.29**
 
-The model performed best on the majority **5-star class**, achieving **77% recall** and a **73% F1-score**.
+The model performed best on the majority **5-star class**, achieving:
 
-Performance on the lower-rated classes was much weaker. The **2-star class had 0% recall**, meaning the model did not correctly identify any 2-star reviews. The 3-star class also had relatively low performance, with **21% recall**.
+* **Precision:** 0.65
+* **Recall:** 0.83
+* **F1-score:** 0.73
 
-The confusion matrix showed that many lower-rated reviews were incorrectly classified as **5-star reviews**, particularly for the 4-star and 3-star classes.
+Performance on the lower rating classes was considerably weaker. The **3-star class had an F1-score of only 0.08**, showing that the model struggled to distinguish some of the less frequent ratings.
 
-This shows that the model's overall accuracy was strongly influenced by the large number of 5-star reviews in the dataset. The **macro F1-score of 0.29**, compared with the weighted F1-score of 0.51, further highlights the model's difficulty in handling the minority rating classes.
+The confusion matrix also showed that many lower-rated reviews were incorrectly classified as higher ratings, particularly as **5-star reviews**.
+
+These results show that the model was strongly influenced by the class imbalance in the dataset. The difference between the macro F1-score of **0.31** and weighted F1-score of **0.51** further demonstrates that performance was much stronger for the majority class than for the minority classes.
 
 ## Key Neural Network Findings
 
 The experiments showed that:
 
-* **Tanh** performed best during the initial activation comparison.
-* A learning rate of **0.001** improved validation performance.
-* Increasing network depth did not improve performance.
-* **Adam** performed better than RMSprop.
-* A **0.1 dropout rate** slightly improved validation accuracy.
-* The model showed signs of **overfitting** during training.
-* **Class imbalance** strongly affected minority-class performance.
-* Accuracy alone did not fully represent model performance.
+* ReLU provided the strongest validation performance during the activation comparison.
+* Class weighting provided a modest improvement in test accuracy.
+* Simpler network architectures performed better than deeper networks.
+* A dropout rate of 0.5 provided the strongest validation performance during dropout tuning.
+* Adam performed better than RMSprop.
+* 20 epochs provided the best result during epoch tuning.
+* The final model still showed signs of overfitting.
+* Class imbalance strongly affected predictions for lower rating classes.
+* Accuracy alone was not enough to describe model performance.
 
 ---
 
@@ -353,29 +418,13 @@ Several improvements could make the analysis more robust.
 
 ### Neural Networks
 
-* Address class imbalance using **class weights or resampling**.
-* Use **early stopping** to reduce overfitting.
-* Experiment with different TF-IDF configurations.
-* Apply **L2 regularization** and alternative dropout settings.
-* Test different neural network architectures.
-* Explore **LSTM, GRU, or Transformer models**.
-* Evaluate **macro F1, precision, and recall** alongside accuracy.
-
----
-
-# Technologies Used
-
-* **Python**
-* **Pandas**
-* **NumPy**
-* **Matplotlib**
-* **Seaborn**
-* **NLTK**
-* **Scikit-learn**
-* **Statsmodels**
-* **TensorFlow / Keras**
-* **PyTorch**
-* **VS code**
+* **Use early stopping** to stop training when validation performance stops improving.
+* **Apply L2 regularization** to reduce model complexity and overfitting.
+* **Use oversampling** to increase representation of minority rating classes.
+* **Improve TF-IDF features** by testing different feature sizes and n-gram settings.
+* **Use word embeddings** such as Word2Vec or GloVe.
+* **Explore LSTM or GRU models** to capture word sequence and context.
+* **Explore transformer models** such as BERT for deeper contextual understanding.
 
 ---
 
@@ -387,10 +436,11 @@ NLP revealed **what customers were discussing and how language differed across s
 
 The results show that the dataset contains useful information about customer behavior and product experience. However, the analysis also highlighted important challenges, particularly **class imbalance, overfitting, limited data, and uncertainty in forecasting**.
 
-Overall, the project provided practical experience in **text preprocessing, exploratory analysis, time series forecasting, feature engineering, neural network modeling, model evaluation, and interpreting results in a real-world customer analytics context**.
+Overall, the project provided practical experience in **text preprocessing, exploratory analysis, time series forecasting, TF-IDF feature engineering, neural network modeling, framework comparison, hyperparameter tuning, model evaluation, and interpreting results in a real-world customer analytics context**.
 
 ### Author: Fascos Jepleting
 
 ### Program: Data Science / Machine Learning
 
 ### Institution: Moringa School
+
